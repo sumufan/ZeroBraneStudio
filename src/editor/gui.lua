@@ -274,7 +274,9 @@ local function createNotebook(frame)
       local tabctrl = event:GetEventObject():DynamicCast("wxAuiTabCtrl")
 
       -- save tab index the event is for
+      local current = notebook:GetSelection()
       selection = notebook:GetPageIndex(tabctrl:GetPage(idx).window)
+      if current ~= selection then notebook:SetSelection(selection) end
       local tree = ide:GetProjectTree()
       local startfile = tree:GetStartFile()
 
@@ -304,6 +306,8 @@ local function createNotebook(frame)
       -- popup statuses are not refreshed on Linux, so do it manually
       if ide.osname == "Unix" then UpdateMenuUI(menu, notebook) end
       notebook:PopupMenu(menu)
+      -- restore selection if it has changed
+      if current ~= selection then notebook:SetSelection(current) end
     end)
 
   local function IfAtLeastOneTab(event) event:Enable(notebook:GetPageCount() > 0) end
